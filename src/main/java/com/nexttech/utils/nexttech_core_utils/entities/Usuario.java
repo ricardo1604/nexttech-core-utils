@@ -1,4 +1,4 @@
-package com.nexttech.utils.entities;
+package com.nexttech.utils.nexttech_core_utils.entities;
 
 import lombok.Data;
 
