@@ -1,6 +1,9 @@
 package com.nexttech.utils.nexttech_core_utils.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -13,10 +16,22 @@ public class UsuarioService {
     @Autowired
     private UserRepositorio userRepo;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     //private BCryptPasswordEncoder passwordEnconder = new BCryptPasswordEncoder();
 
-    public void registrarUsuario(User usuario) {
+    public User registrarUsuario(User usuario) {
         //usuario.setPassw(passwordEnconder.encode(usuario.getPassw()));
-        userRepo.save(usuario);
+        if (userRepo.existsByEmail(usuario.getEmail())) {
+            throw new IllegalArgumentException("Email ya esta en uso.");
+        }
+        usuario.setPassw(passwordEncoder.encode(usuario.getPassw()));
+        //Guardar
+        return userRepo.save(usuario);
+    }
+
+    public Optional<User> getUserById(Long id) {
+        return userRepo.findById(id);
     }
 }
