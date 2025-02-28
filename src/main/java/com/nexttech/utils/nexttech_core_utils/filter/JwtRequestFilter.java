@@ -1,14 +1,13 @@
 package com.nexttech.utils.nexttech_core_utils.filter;
 
 import java.io.IOException;
-import java.rmi.ServerException;
-import java.rmi.server.ServerCloneException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.nexttech.utils.nexttech_core_utils.service.JwtUtil;
@@ -18,6 +17,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+@Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Autowired

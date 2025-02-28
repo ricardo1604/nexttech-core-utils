@@ -4,14 +4,18 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nexttech.utils.nexttech_core_utils.model.User;
 import com.nexttech.utils.nexttech_core_utils.service.AuthService;
-import com.nexttech.utils.nexttech_core_utils.service.UsuarioService;
+import com.nexttech.utils.nexttech_core_utils.service.CustomUserDetailsService;
+import com.nexttech.utils.nexttech_core_utils.service.JwtUtil;
 
 @RestController
 @RequestMapping("/auth/api/")
@@ -19,7 +23,15 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
-    private UsuarioService usuarioService;
+    
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
 
     //metodo post para hacer login
     @PostMapping("/login")
@@ -29,31 +41,13 @@ public class AuthController {
         String password = credenciales.get("passw");
 
         if (authService.autenticar(usuario, password)) {
-            return ResponseEntity.ok("Login Exitoso!");
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(usuario, password));
+            UserDetails userDetails = userDetailsService.loadUserByUsername(usuario);
+
+            return ResponseEntity.ok(jwtUtil.generateToken(userDetails.getUsername()));
         } else {
             return ResponseEntity.status(401).body("Credenciales Invalidas");
         }
     }
-
-    //Registrar usuario
-    /* 
-    @PostMapping("/registrar")
-    public ResponseEntity<String> registrar(@RequestBody Map<String, String> credenciales) {
-        System.out.println("Registrando Usuario");
-        String usuario = credenciales.get("username");
-        String password = credenciales.get("password");
-        String rol = credenciales.get("rol");
-
-        User user = new User();
-
-        user.setPassw(password);
-        user.setUsuario(usuario);
-        user.setRol(Integer.parseInt(rol));
-
-        usuarioService.registrarUsuario(user);
-
-        return ResponseEntity.ok("Usuario registrado con Exitoso!");
-
-    } */
     
 }
